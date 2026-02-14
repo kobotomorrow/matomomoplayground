@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "rs_*",
+]
+
+resolver = "3"
