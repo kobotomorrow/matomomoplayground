@@ -1,10 +1,3 @@
-// CPUキャッシュメモリ構成
-// $ lscpu | grep "L[1-3][di ]"
-//   L1d: 192 KiB (4 instances)(48 KiB per core)
-//   L1i: 128 KiB (4 instances)(32 KiB per core) 命令用のキャッシュのため、データアクセスの計測には影響しない
-//   L2: 5 MiB (4 instances)(1.25 MiB per core)
-//   L3: 8 MiB (1 instance)(shared)
-
 use std::time::Instant;
 use std::hint::black_box;
 use rand::seq::SliceRandom;
