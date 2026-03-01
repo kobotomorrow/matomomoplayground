@@ -1,0 +1,25 @@
+[package]
+name = "rs_lambda_fitbit_activities"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "bootstrap"
+path = "src/main.rs"
+
+[dependencies]
+lambda_runtime = "0.13"
+tokio = { version = "1.49.0", features = ["full"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+reqwest = { version = "0.12", features = ["json", "native-tls-vendored"] }
+aws-sdk-secretsmanager = "1.44"
+aws-sdk-s3 = "1.44"
+aws-config = "1.5"
+chrono = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
