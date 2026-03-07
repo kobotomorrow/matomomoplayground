@@ -1,3 +1,5 @@
+// cargo lambda build --release -p rs_lambda_fitbit_activities --output-format zip
+
 fn get_yesterday_date() -> Result<(String, u32, u32, u32), lambda_runtime::Error> {
     use chrono::Datelike;
     let yesterday = chrono::Local::now() - chrono::Duration::days(1);
@@ -102,6 +104,11 @@ async fn handler(_event: lambda_runtime::LambdaEvent<serde_json::Value>) -> Resu
     
     // 1. 前日の日付を取得 (YYYY-MM-DD 形式)
     let (date, year, month, day) = get_yesterday_date()?;
+    // 日付固定
+    // let date = "2026-03-05".to_string();
+    // let year = 2026u32;
+    // let month = 3u32;
+    // let day = 5u32;
     
     println!("取得対象日付: {}", date);
     
@@ -142,9 +149,9 @@ async fn handler(_event: lambda_runtime::LambdaEvent<serde_json::Value>) -> Resu
     println!("Fitbit APIからデータを取得しました");
     
     // 5. S3に保存
-    // 形式: s3://bucket/activities/year=YYYY/month=MM/day=DD/activities.json
+    // 形式: s3://bucket/data/fitbit/activities/year=YYYY/month=MM/day=DD/activities.json
     let s3_key = format!(
-        "activities/year={}/month={:02}/day={:02}/activities.json",
+        "data/fitbit/activities/year={}/month={:02}/day={:02}/activities.json",
         year, month, day
     );
 
