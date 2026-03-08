@@ -1,4 +1,4 @@
-name: Invoke Fitbit Lambda
+name: Invoke Fitbit Activities Lambda
 
 on:
   schedule:
