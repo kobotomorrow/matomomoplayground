@@ -17,6 +17,7 @@ aws-sdk-secretsmanager = "1.44"
 aws-sdk-s3 = "1.44"
 aws-config = "1.5"
 chrono = "0.4"
+base64 = "0.22.1"
 
 [profile.release]
 opt-level = 3

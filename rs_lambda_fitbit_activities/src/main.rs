@@ -1,5 +1,7 @@
 // cargo lambda build --release -p rs_lambda_fitbit_activities --output-format zip
 
+use base64::{Engine as _, engine::general_purpose};
+
 fn get_yesterday_date() -> Result<(String, u32, u32, u32), lambda_runtime::Error> {
     use chrono::Datelike;
     let yesterday = chrono::Local::now() - chrono::Duration::days(1);
@@ -42,21 +44,38 @@ async fn refresh_token(
     secret_name: &str,
 ) -> Result<serde_json::Value, lambda_runtime::Error> {
     let refresh_token_str = tokens["refresh_token"].as_str().ok_or("refresh_token が見つかりません")?;
-    
+    let client_id = tokens["client_id"].as_str().ok_or("client_id が見つかりません")?;
+    let client_secret = tokens["client_secret"].as_str().ok_or("client_secret が見つかりません")?;
+
+    let credentials = format!("{}:{}", client_id, client_secret);
+    let encoded = general_purpose::STANDARD.encode(credentials);
+    let auth_header = format!("Basic {}", encoded);
+
+    println!("アクセストークンをリフレッシュします");
+
     let client = reqwest::Client::new();
     let response = client
         .post("https://api.fitbit.com/oauth2/token")
+        .header("Authorization", auth_header)
         .form(&[
             ("grant_type", "refresh_token"),
             ("refresh_token", refresh_token_str),
         ])
         .send()
         .await?;
+
+    println!("Fitbit APIからリフレッシュトークンのレスポンスを受け取りました");
     
-    if !response.status().is_success() { return Err("トークンリフレッシュ失敗".into()); }
+    if !response.status().is_success() { 
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        println!("Fitbit API Error: Status={}, Body={}", status, body);
+        return Err(format!("トークンリフレッシュ失敗: {}", body).into());
+    }
+
+    println!("トークンリフレッシュ成功: Status={}", response.status());
     
     let token_response = response.json::<serde_json::Value>().await?;
-    
     let now = chrono::Utc::now().timestamp() as u64;
     let expires_in = token_response["expires_in"].as_u64().unwrap_or(3600);
     let expires_at = now + expires_in;
@@ -66,6 +85,8 @@ async fn refresh_token(
         "refresh_token": token_response["refresh_token"].as_str().unwrap_or(refresh_token_str),
         "expires_at": expires_at,
         "created_at": now,
+        "client_id": client_id,
+        "client_secret": client_secret,
     });
     
     update_token_in_secret_manager(config, secret_name, &new_tokens).await?;
