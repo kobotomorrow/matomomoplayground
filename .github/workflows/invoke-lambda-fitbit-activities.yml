@@ -24,7 +24,6 @@ jobs:
           
       - name: Run Lambda Function
         run: |
-          # Secretから関数名を取得して実行
           aws lambda invoke \
             --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
             --payload '{}' \
