@@ -49,8 +49,9 @@ async fn refresh_token(tokens: &serde_json::Value, tokens_path: &std::path::Path
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    // 取得対象の日付（YYYY-MM-DD 形式）
-    let date = "2026-02-28";
+    let date_list = vec![
+        "2026-03-01"
+    ];
     
     // 1. ホームディレクトリから保存されたトークンを読み込む
     let home = std::env::var("HOME")
@@ -85,35 +86,39 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("✓ トークンを読み込みました");
     
     // 3. データを取得対象の日付で取得
-    println!("📅 {}のデータを取得します", date);
-    
-    // 4. Fitbit APIからアクティビティデータを取得
-    let client = reqwest::Client::new();
-    let url = format!("https://api.fitbit.com/1/user/-/activities/date/{}.json", date);
-    
-    let response = client
-        .get(&url)
-        .header("Authorization", format!("Bearer {}", access_token))
-        .send()
-        .await?;
-    
-    if !response.status().is_success() {
-        return Err(format!("APIエラー: {}", response.status()).into());
+    for date in date_list {
+
+        println!("📅 {}のデータを取得します", date);
+        
+        // 4. Fitbit APIからアクティビティデータを取得
+        let client = reqwest::Client::new();
+        let url = format!("https://api.fitbit.com/1/user/-/activities/date/{}.json", date);
+        
+        let response = client
+            .get(&url)
+            .header("Authorization", format!("Bearer {}", access_token))
+            .send()
+            .await?;
+        
+        if !response.status().is_success() {
+            return Err(format!("APIエラー: {}", response.status()).into());
+        }
+        
+        let activities_data = response.json::<serde_json::Value>().await?;
+        
+        println!("Fitbit APIからデータを取得しました");
+        
+        // 4. データをプロジェクト内のファイルに保存
+        let year = date.split('-').next().unwrap_or("");
+        let month = date.split('-').nth(1).unwrap_or("");
+        let day = date.split('-').nth(2).unwrap_or("");
+        let output_dir = std::path::PathBuf::from("./activity_data").join(format!("year={}/month={}/day={}", year, month, day));
+        fs::create_dir_all(&output_dir)?;
+        let output_file = output_dir.join(format!("activities.json"));
+        let json_str = serde_json::to_string_pretty(&activities_data)?;
+        fs::write(&output_file, json_str)?;
+        
+        println!("データを {} に保存しました", output_file.display());
     }
-    
-    let activities_data = response.json::<serde_json::Value>().await?;
-    
-    println!("Fitbit APIからデータを取得しました");
-    
-    // 4. データをプロジェクト内のファイルに保存
-    let output_dir = std::path::PathBuf::from("./activity_data");
-    fs::create_dir_all(&output_dir)?;
-    
-    let output_file = output_dir.join(format!("activities_{}.json", date));
-    let json_str = serde_json::to_string_pretty(&activities_data)?;
-    fs::write(&output_file, json_str)?;
-    
-    println!("データを {} に保存しました", output_file.display());
-    
     Ok(())
 }
