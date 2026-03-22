@@ -2268,6 +2268,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "rs_polar_auth"
+version = "0.1.0"
+dependencies = [
+ "oauth2",
+ "reqwest",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "rs_polar_exercises"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "reqwest",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "rustc-hash"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
