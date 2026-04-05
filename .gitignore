@@ -2,3 +2,7 @@
 activity_data
 exercises_data
 docs
+go_agg_run_distance/go_agg_run_distance
+.codex
+go_polar_exercises_json_to_parquet/run.local.sh
+go_polar_exercises_json_to_parquet/build/
