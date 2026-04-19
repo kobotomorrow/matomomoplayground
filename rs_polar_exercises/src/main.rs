@@ -11,16 +11,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .map_err(|_| format!("{} が見つかりません。先に rs_polar_auth を実行してください", tokens_path.display()))?;
     let tokens: serde_json::Value = serde_json::from_str(&tokens_content)?;
 
-    // 2. トークンの有効期限をチェック
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)?
-        .as_secs();
-    let expires_at = tokens["expires_at"]
-        .as_u64()
-        .ok_or("expires_at が見つかりません")?;
-    if now >= expires_at {
-        return Err("アクセストークンが期限切れです。rs_polar_authで再取得してください".into());
-    }
+    // 2. トークンをチェック
     let access_token = tokens["access_token"]
         .as_str()
         .ok_or("access_token が見つかりません")?;
