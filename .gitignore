@@ -7,3 +7,4 @@ go_agg_run_distance/go_agg_run_distance
 go_polar_exercises_json_to_parquet/run.local.sh
 go_polar_exercises_json_to_parquet/build/
 go_lambda_artifact_monitor/build/
+go_build_curated_runnning_distance/build/
