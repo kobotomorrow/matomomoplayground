@@ -27,4 +27,5 @@ jobs:
           aws lambda invoke \
             --function-name ${{ secrets.LAMBDA_CURATED_RUNNING_DISTANCE_FUNCTION_NAME }} \
             --payload '{}' \
+            --cli-read-timeout 300 \
             /dev/null
