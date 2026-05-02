@@ -2,7 +2,8 @@ name: Invoke Fitbit Activities Lambda
 
 on:
   schedule:
-    - cron: '0 21 * * *' # UTCの06:00
+    - cron: '0 1 * * *'
+      timezone: "Asia/Tokyo"
   workflow_dispatch:
 
 permissions:

@@ -2,7 +2,8 @@ name: Invoke Curated Running Distance Lambda
 
 on:
   schedule:
-    - cron: '30 22 * * *' # JSTの07:30
+    - cron: '0 3 * * *'
+      timezone: "Asia/Tokyo"
   workflow_dispatch:
 
 permissions:

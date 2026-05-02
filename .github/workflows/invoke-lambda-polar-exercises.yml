@@ -2,7 +2,8 @@ name: Invoke Polar Exercises Lambda
 
 on:
   schedule:
-    - cron: '0 21 * * *' # JSTの06:00
+    - cron: '0 1 * * *'
+      timezone: "Asia/Tokyo"
   workflow_dispatch:
 
 permissions:
