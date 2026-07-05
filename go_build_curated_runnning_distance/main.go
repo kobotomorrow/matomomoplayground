@@ -158,12 +158,12 @@ COPY (
         SELECT
             year,
             month,
-            ROUND(SUM(distance), 2) AS distance
+            ROUND(SUM(distance) / 1000, 2) AS distance
         FROM curated_activity_distance
         GROUP BY year, month
     ),
     total_distance AS (
-        SELECT ROUND(SUM(distance), 2) AS distance
+        SELECT ROUND(SUM(distance) / 1000, 2) AS distance
         FROM curated_activity_distance
     )
     SELECT
